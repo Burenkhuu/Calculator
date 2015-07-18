@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>@ViewBag.Title</title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript">
+        var state = 0;
+        
+        $(document).ready(function (e) {
+            $('#equals').attr('onclick','return false');
+            $('#num1').hide();
+            $('#op').hide();
+            $('#1,#2,#3,#4,#5,#6,#7,#8,#9,#0').click(function () {
+                if(state==1)
+                {
+                    $('#answer').val('');
+                }
+                if($('#answer').val()==0)
+                {
+                    $('#answer').val('');
+                }
+                var v = $(this).val();
+                $('#answer').val($('#answer').val() + v);
+                state=0;
+            });
+            $('#C').click(function () {
+                $('#num1').hide();
+                $('#op').hide();
+                $('#answer').val('');
+                $('#equals').attr('onclick', 'return false');
+                $('#op').removeClass('active');
+            });
+            $('#plus').click(function (e) {
+                OperatorClicked('+');
+            });
+            $('#subtract').click(function (e) {
+                OperatorClicked('-');
+            });
+            $('#divide').click(function (e) {
+                OperatorClicked('/');
+            });
+            $('#product').click(function (e) {
+                OperatorClicked('*');
+            });
+            $('#equals').click(function () {
+                if ($('#equals').attr('onclick') == 'return false')
+                {
+                    return false;
+                }
+                if ($('#answer').val() == '')
+                {
+                    alert("Please input the number!");
+                    return false;
+                }
+                
+                $('#num1').hide();
+                $('#op').hide();
+                var num2 = $('#answer').val();
+                $('#answer').val('');
+                CalculcateResult($('#num1').val(), num2, $('#op').val());
+                state = 1;
+                $('#equals').attr('onclick', 'return false');
+                $('#op').removeClass('active');
+            });
+        });
+        function OperatorClicked(operator) {
+            if ($("#op").attr('class') == 'active')
+            {
+                $("#op").val(operator);
+                return false;
+            }
+            if ($.isNumeric($('#answer').val()) == false) {
+                alert("Please input the number!");
+                return false;
+            }
+            $('#num1').show();
+            $("#op").show();
+            $('#num1').val($('#answer').val());
+            $('#op').val(operator);
+            $('#op').addClass('active');
+            $('#answer').val('');
+            $('#equals').attr('onclick', '');
+
+        }
+        function CalculcateResult(number1,number2,op) {
+                $.ajax({
+                    url: '/Home/Calculate',
+                    type: 'POST',
+                    data: { num1: number1, num2: number2, op: op },
+                    cache: false,
+                    dataType: 'json',
+                    success: function (result) {
+                        $('#answer').val(result.resultNum);
+                    }
+                });
+            
+        }
+    </script>
+    <style>
+        form, input, button {
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width:200px; margin:auto;">
+        <form action="" id="calculator">
+            <input type="hidden" id="operation" value="" />
+            <input type="text" id="num1" value="" style="width:98%; height:35px;" disabled="disabled" />
+            <input type="text" id="op" value="" style="width:10%; height:35px;" disabled="disabled" />
+            <input type="text" id="answer" value="" style="width:98%; height:35px;" disabled="disabled" />
+            <input type="button" value="+" id="plus" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="-" id="subtract" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="/" id="divide" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="*" id="product" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="1" id="1" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="2" id="2" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="3" id="3" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="4" id="4" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="5" id="5" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="6" id="6" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="7" id="7" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="8" id="8" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="9" id="9" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="0" id="0" style="width:50px; height:50px; float:left;" />
+            <input type="button" value="C" id="C" style="width:50px; height:50px; float:left; color:red;" />
+            <input type="button" value="=" id="equals" style="width:50px; height:50px; float:left;" />
+        </form>
+        <div style="clear:both;"></div>
+    </div>
+</body>
+</html>
